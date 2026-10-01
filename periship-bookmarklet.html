@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PeriShip Autofill Bookmarklet — Plainview</title>
+<style>
+  :root {
+    --forest: #0f1f0f;
+    --lime: #7ab050;
+    --parchment: #faf7f2;
+    --parchment-dim: #f0ebe2;
+    --gold: #c8b87a;
+    --border: #ddd6c8;
+    --text-dark: #1a1a1a;
+    --text-mid: #444;
+    --text-light: #888;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --shadow-lg: 0 4px 24px rgba(0,0,0,0.14);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--parchment-dim);
+    color: var(--text-dark);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 40px;
+    max-width: 580px;
+    width: 100%;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .logo-mark {
+    width: 40px; height: 40px;
+    background: var(--forest);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .logo-text h2 { font-size: 16px; font-weight: 700; color: var(--forest); }
+  .logo-text p { font-size: 12px; color: var(--text-light); }
+
+  h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--forest); }
+  .subtitle { font-size: 13px; color: var(--text-mid); margin-bottom: 28px; line-height: 1.6; }
+
+  .step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    background: var(--forest);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-content { flex: 1; }
+  .step-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .step-desc { font-size: 13px; color: var(--text-mid); line-height: 1.5; }
+
+  .bookmarklet-wrap {
+    background: var(--parchment);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    margin: 8px 0;
+  }
+  .bookmarklet-wrap p {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 12px;
+  }
+  .bookmarklet-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background: var(--forest);
+    color: #fff;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: grab;
+    border: 3px solid var(--lime);
+  }
+  .bookmarklet-link:hover { background: #1a3a1a; }
+
+  .drag-hint {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+  .test-section { }
+  .test-section h4 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .test-result {
+    background: var(--parchment);
+    border-radius: var(--radius);
+    padding: 14px;
+    font-size: 12px;
+    font-family: monospace;
+    color: var(--text-mid);
+    min-height: 60px;
+    line-height: 1.6;
+  }
+  .btn-test {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: var(--lime);
+    color: var(--forest);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-test:hover { opacity: 0.85; }
+
+  .note {
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: #fff8e1;
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 12px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <div class="logo-mark">🥩</div>
+    <div class="logo-text">
+      <h2>Plainview Beef Co.</h2>
+      <p>PeriShip Autofill Setup</p>
+    </div>
+  </div>
+
+  <h3>PeriShip Rate Autofill Bookmarklet</h3>
+  <p class="subtitle">Install this once. After that, clicking "🚀 Get PeriShip Rate" in the fulfillment tool will open PeriShip's rate page — then click this bookmarklet to auto-fill the destination zip, weight, dimensions, and dry ice in one click.</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <div class="step-title">Show your bookmarks bar</div>
+      <div class="step-desc">In Chrome: View → Always Show Bookmarks Bar (or ⌘⇧B). You only need to do this once.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <div class="step-title">Drag BOTH buttons to your bookmarks bar</div>
+      <div class="bookmarklet-wrap">
+        <p>Drag both buttons up to your bookmarks bar ↑</p>
+        <a class="bookmarklet-link" id="bookmarklet-ups" style="background:#e65c00;border-color:#e65c00" href="javascript:(function(){
+try{
+// Read all inputs/selects from UPS dashboard
+var els=Array.from(document.querySelectorAll('input,select')).filter(function(el){return el.value&&el.value.length>0;});
+
+// Verify we're on the right page
+if(els.length<30){alert('Could not read order data. Make sure you are on the UPS dashboard Create Shipment page with Simple Rate toggled OFF.');return;}
+
+// Extract recipient data (indexes 21-29)
+var name=els[21]?els[21].value:'';
+var phone=els[22]?els[22].value:'';
+var addr1=els[25]?els[25].value:'';
+var zip=els[26]?els[26].value:'';
+var state=els[28]?els[28].value:'';
+var city=els[29]?els[29].value:'';
+var residential=false;
+
+// Extract package data (indexes 43=L, 44=W, 45=H, 46=weight)
+var length=els[43]?els[43].value:'';
+var width=els[44]?els[44].value:'';
+var height=els[45]?els[45].value:'';
+var weight=els[46]?els[46].value:'';
+
+// Dry ice — default based on weight
+var dryIce=5;
+var w=parseFloat(weight)||0;
+if(w>30)dryIce=20;
+else if(w>20)dryIce=15;
+else if(w>12)dryIce=10;
+
+// Confirm what was read
+var msg='Reading from UPS order:
+
+Recipient: '+name+'
+Address: '+addr1+', '+city+', '+state+' '+zip+'
+Box: '+length+'x'+width+'x'+height+'&quot; | '+weight+'lbs
+Dry ice: '+dryIce+'lbs
+
+Open PeriShip Create Label?';
+if(!confirm(msg))return;
+
+// Store data for PeriShip fill
+var d={
+  name:name,phone:phone,addr1:addr1,addr2:'',city:city,state:state,zip:zip,
+  weight:weight,length:length,width:width,height:height,dryIce:dryIce,
+  residential:residential,orderNum:''
+};
+sessionStorage.setItem('pv_ups_prefill',JSON.stringify(d));
+
+window.open('https://portal.periship.com/labels/','_blank');
+alert('PeriShip Shipping Labels opened. Click Create Label, then click the Fill PeriShip bookmarklet on that page.');
+
+}catch(e){alert('Error: '+e.message);}
+})();" href="javascript:(function(){
+try{
+// Read all inputs/selects from UPS dashboard
+var els=Array.from(document.querySelectorAll('input,select')).filter(function(el){return el.value&&el.value.length>0;});
+
+// Verify we're on the right page
+if(els.length<30){alert('Could not read order data. Make sure you are on the UPS dashboard Create Shipment page with Simple Rate toggled OFF.');return;}
+
+// Extract recipient data (indexes 21-29)
+var name=els[21]?els[21].value:'';
+var phone=els[22]?els[22].value:'';
+var addr1=els[25]?els[25].value:'';
+var zip=els[26]?els[26].value:'';
+var state=els[28]?els[28].value:'';
+var city=els[29]?els[29].value:'';
+var residential=false;
+
+// Extract package data (indexes 43=L, 44=W, 45=H, 46=weight)
+var length=els[43]?els[43].value:'';
+var width=els[44]?els[44].value:'';
+var height=els[45]?els[45].value:'';
+var weight=els[46]?els[46].value:'';
+
+// Dry ice — default based on weight
+var dryIce=5;
+var w=parseFloat(weight)||0;
+if(w>30)dryIce=20;
+else if(w>20)dryIce=15;
+else if(w>12)dryIce=10;
+
+// Confirm what was read
+var msg='Reading from UPS order:
+
+Recipient: '+name+'
+Address: '+addr1+', '+city+', '+state+' '+zip+'
+Box: '+length+'x'+width+'x'+height+'" | '+weight+'lbs
+Dry ice: '+dryIce+'lbs
+
+Open PeriShip Create Label?';
+if(!confirm(msg))return;
+
+// Store data for PeriShip fill
+var d={
+  name:name,phone:phone,addr1:addr1,addr2:'',city:city,state:state,zip:zip,
+  weight:weight,length:length,width:width,height:height,dryIce:dryIce,
+  residential:residential,orderNum:''
+};
+sessionStorage.setItem('pv_ups_prefill',JSON.stringify(d));
+
+window.open('https://portal.periship.com/labels/','_blank');
+alert('PeriShip Shipping Labels opened. Click Create Label, then click the Fill PeriShip bookmarklet on that page.');
+
+}catch(e){alert('Error: '+e.message);}
+})();">🚀 Fill PeriShip</a>
+        <div class="drag-hint">☝ Drag me to your bookmarks bar</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <div class="step-title">How to use it — two bookmarklets, two steps</div>
+      <div class="step-desc">
+        <strong>Step 1 — On the UPS dashboard Create Shipment page:</strong><br>
+        1. Set weight and dimensions on the UPS order (toggle Simple Rate OFF)<br>
+        2. Click <strong>📋 Read UPS Order</strong> bookmarklet<br>
+        3. Confirm the data it read — click OK<br>
+        4. PeriShip Shipping Labels opens automatically<br><br>
+        <strong>Step 2 — On PeriShip after clicking Create Label:</strong><br>
+        5. Click <strong>🚀 Fill PeriShip</strong> bookmarklet<br>
+        6. All recipient and package fields fill instantly from the UPS data<br>
+        7. Select service type → buy label
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="test-section">
+    <h4>Check stored shipment data</h4>
+    <div class="test-result" id="test-result">Click the button below to see what's currently stored from the fulfillment tool.</div>
+    <button class="btn-test" onclick="checkData()">Check stored data</button>
+  </div>
+
+  <div class="note">
+    <strong>Note:</strong> Data is stored in your browser's localStorage and shared between tabs on the same browser. It's never sent to any server. The bookmarklet only reads this data when you click it on the PeriShip rate page.
+  </div>
+</div>
+
+<script>
+// ── Build the bookmarklet code ────────────────────────────────────
+const bookmarkletCode = `javascript:(function(){
+  try {
+    var raw = prompt('Paste the Plainview shipment data (copied when you clicked Get PeriShip Rate):');
+    if (!raw) return;
+    raw = raw.trim();
+    var parts = raw.split('|');
+    if (parts.length < 9) { alert('Invalid data format. Copy again from the fulfillment tool.'); return; }
+    var d = {
+      orderNum:  parts[0],
+      zip:       parts[1],
+      residential: parts[2] === 'Y',
+      weight:    parts[3],
+      length:    parts[4],
+      width:     parts[5],
+      height:    parts[6],
+      shipDate:  parts[7],
+      dryIce:    parts[8],
+      name:      parts[9]  || '',
+      phone:     parts[10] || '9182848588',
+      addr1:     parts[11] || '',
+      addr2:     parts[12] || '',
+      city:      parts[13] || '',
+      state:     parts[14] || '',
+    };
+
+    function fillByLabel(labelText, value) {
+      var labels = document.querySelectorAll('label');
+      for (var i = 0; i < labels.length; i++) {
+        var lbl = labels[i];
+        if (lbl.textContent.trim().toLowerCase().replace(/[^a-z0-9 ]/g,'').includes(labelText.toLowerCase())) {
+          var forId = lbl.getAttribute('for');
+          var inp = forId ? document.getElementById(forId) : null;
+          if (!inp) inp = lbl.nextElementSibling;
+          if (inp && inp.tagName !== 'INPUT') inp = inp.querySelector('input');
+          if (inp) {
+            var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+            setter.call(inp, value);
+            inp.dispatchEvent(new Event('input', {bubbles:true}));
+            inp.dispatchEvent(new Event('change', {bubbles:true}));
+            inp.dispatchEvent(new KeyboardEvent('keydown', {bubbles:true}));
+            inp.dispatchEvent(new KeyboardEvent('keyup', {bubbles:true}));
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function fillSelect(labelText, value) {
+      var labels = document.querySelectorAll('label');
+      for (var i = 0; i < labels.length; i++) {
+        if (labels[i].textContent.trim().toLowerCase().replace(/[^a-z0-9 ]/g,'').includes(labelText.toLowerCase())) {
+          var forId = labels[i].getAttribute('for');
+          var sel = forId ? document.getElementById(forId) : labels[i].nextElementSibling;
+          if (sel && sel.tagName === 'SELECT') {
+            var setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value').set;
+            setter.call(sel, value);
+            sel.dispatchEvent(new Event('change', {bubbles:true}));
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function clickCheckbox(labelText, shouldCheck) {
+      var labels = document.querySelectorAll('label');
+      for (var i = 0; i < labels.length; i++) {
+        if (labels[i].textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+          var forId = labels[i].getAttribute('for');
+          var cb = forId ? document.getElementById(forId) : labels[i].querySelector('input[type=checkbox]');
+          if (cb && cb.checked !== shouldCheck) cb.click();
+          if (cb) return true;
+        }
+      }
+      return false;
+    }
+
+    var filled = [], failed = [];
+
+    // Recipient fields
+    if (fillByLabel('name',         d.name))    filled.push('Name');        else failed.push('Name');
+    if (fillByLabel('phone',        d.phone))   filled.push('Phone');       else failed.push('Phone');
+    if (fillByLabel('address 1',    d.addr1))   filled.push('Address 1');   else failed.push('Address 1');
+    if (d.addr2) fillByLabel('address 2', d.addr2);
+    if (fillByLabel('city',         d.city))    filled.push('City');        else failed.push('City');
+    if (fillSelect('state',         d.state))   filled.push('State');       else filled.push('State (check manually)');
+    if (fillByLabel('zipcode',      d.zip))     filled.push('Zip');         else failed.push('Zip');
+
+    // Package fields
+    if (fillByLabel('weight',       d.weight))  filled.push('Weight');      else failed.push('Weight');
+    if (fillByLabel('length',       d.length))  filled.push('Length');      else failed.push('Length');
+    if (fillByLabel('width',        d.width))   filled.push('Width');       else failed.push('Width');
+    if (fillByLabel('height',       d.height))  filled.push('Height');      else failed.push('Height');
+
+    // Dry ice checkbox + weight
+    clickCheckbox('dry ice', true);
+    if (fillByLabel('dry ice',      d.dryIce))  filled.push('Dry Ice: ' + d.dryIce + 'lbs');
+
+    var msg = 'Order #' + d.orderNum + ' — ' + d.name + '\\n\\n✓ Filled:\\n' + filled.join('\\n');
+    if (failed.length) msg += '\\n\\n⚠ Fill manually:\\n' + failed.join('\\n');
+    alert(msg);
+
+  } catch(e) {
+    alert('Error: ' + e.message);
+  }
+})();`;
+
+    function fillByLabel(labelText, value) {
+      var labels = document.querySelectorAll('label');
+      for (var i = 0; i < labels.length; i++) {
+        var lbl = labels[i];
+        if (lbl.textContent.trim().toLowerCase().replace(/[^a-z0-9 ]/g,'').includes(labelText.toLowerCase())) {
+          var forId = lbl.getAttribute('for');
+          var inp = forId ? document.getElementById(forId) : null;
+          if (!inp) inp = lbl.nextElementSibling;
+          if (inp && inp.tagName !== 'INPUT') inp = inp.querySelector('input');
+          if (inp) {
+            var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+            setter.call(inp, value);
+            inp.dispatchEvent(new Event('input', {bubbles:true}));
+            inp.dispatchEvent(new Event('change', {bubbles:true}));
+            inp.dispatchEvent(new KeyboardEvent('keydown', {bubbles:true}));
+            inp.dispatchEvent(new KeyboardEvent('keyup', {bubbles:true}));
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function clickCheckbox(labelText, shouldCheck) {
+      var labels = document.querySelectorAll('label');
+      for (var i = 0; i < labels.length; i++) {
+        if (labels[i].textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+          var forId = labels[i].getAttribute('for');
+          var cb = forId ? document.getElementById(forId) : labels[i].querySelector('input[type=checkbox]');
+          if (cb && cb.checked !== shouldCheck) cb.click();
+          if (cb) return true;
+        }
+      }
+      var cbs = document.querySelectorAll('input[type=checkbox]');
+      for (var j = 0; j < cbs.length; j++) {
+        var nearby = cbs[j].closest('div') ? cbs[j].closest('div').textContent.toLowerCase() : '';
+        if (nearby.includes(labelText.toLowerCase())) {
+          if (cbs[j].checked !== shouldCheck) cbs[j].click();
+          return true;
+        }
+      }
+      return false;
+    }
+
+    var filled = [], failed = [];
+
+    if (fillByLabel('destination', d.destination)) filled.push('Destination: ' + d.destination);
+    else failed.push('Destination zip');
+
+    if (clickCheckbox('residential', d.residential)) filled.push('Residential: ' + (d.residential ? 'Yes' : 'No'));
+    else failed.push('Residential checkbox');
+
+    if (fillByLabel('weight', d.weight)) filled.push('Weight: ' + d.weight + 'lb');
+    else failed.push('Weight');
+
+    if (fillByLabel('length', d.length)) filled.push('Length: ' + d.length);
+    else failed.push('Length');
+    if (fillByLabel('width', d.width)) filled.push('Width: ' + d.width);
+    else failed.push('Width');
+    if (fillByLabel('height', d.height)) filled.push('Height: ' + d.height);
+    else failed.push('Height');
+
+    if (d.dryIce) {
+      if (clickCheckbox('dry ice', true)) filled.push('Dry Ice: checked');
+      else failed.push('Dry Ice checkbox');
+    }
+
+    var msg = 'Order #' + d.orderNum + '\\n\\n✓ Filled:\\n' + filled.join('\\n');
+    if (failed.length) msg += '\\n\\n⚠ Fill manually:\\n' + failed.join('\\n');
+    alert(msg);
+
+  } catch(e) {
+    alert('Error: ' + e.message);
+  }
+})();`;
+
+// Set the bookmarklet href
+// href hardcoded above
+
+// ── Check stored data ─────────────────────────────────────────────
+function checkData() {
+  const raw = localStorage.getItem('pv_periship_prefill');
+  const el = document.getElementById('test-result');
+  if (!raw) {
+    el.textContent = 'No data stored yet. Go to the fulfillment tool and click "🚀 Get PeriShip Rate" on an order first.';
+    return;
+  }
+  try {
+    const d = JSON.parse(raw);
+    const age = Math.round((Date.now() - d.ts) / 60000);
+    el.innerHTML = `
+Order #${d.orderNum}
+Destination zip: ${d.destination} (${d.residential ? 'Residential' : 'Commercial'})
+Weight: ${d.weight} lbs
+Dimensions: ${d.length}×${d.width}×${d.height}"
+Ship date: ${d.shipDate}
+Dry ice: ${d.dryIce ? 'Yes' : 'No'}
+Stored: ${age} minute${age !== 1 ? 's' : ''} ago
+    `.trim();
+  } catch(e) {
+    el.textContent = 'Error reading stored data: ' + e.message;
+  }
+}
+</script>
+</body>
+</html>
